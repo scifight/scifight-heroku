@@ -1,0 +1,8 @@
+# Project's local settings
+/.idea/
+/.env
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class

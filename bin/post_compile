@@ -1,0 +1,22 @@
+#!/bin/sh
+# This file is Heroku's post-compile hook, triggered by official heroku/python
+# buildpack. I became aware that it exists from the following gist:
+# https://gist.github.com/kylefox/7044491259b6b2586ca1
+
+set -o nounset
+set -o errexit
+
+# Always run migrations after deploy, even when there is no need to.
+./manage.py migrate
+
+# Create superuser account if explicitly asked to do so. This may be needed
+# if user is deploying a completely fresh application instance and don't want
+# to deal with command line to make it usable.
+if [ "${SCIFIGHT_CREATE_ADMIN:-}" = "yes" ] ; then
+    ./manage.py createsuperuser --no-input \
+            --username="$SCIFIGHT_ADMIN_USER" \
+            --email="$SCIFIGHT_ADMIN_EMAIL"
+    ./manage.py changepassword_quiet \
+            "$SCIFIGHT_ADMIN_USER" \
+            "$SCIFIGHT_ADMIN_PASS"
+fi
